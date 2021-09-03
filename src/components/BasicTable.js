@@ -1,17 +1,12 @@
 import React, { useMemo } from "react";
-import { useTable } from "react-table";
+import { useTable, useFilters } from "react-table";
 import Data from "../data.js";
 import { Columns } from "../columns.js";
-
+import "../App.css";
 export const BasicTable = () => {
   //data isn,t creatted on every render by usememo
   const columns = useMemo(() => Columns, []);
   const data = useMemo(() => Data, []);
-
-  const tableInstance = useTable({
-    columns,
-    data
-  });
 
   const {
     getTableProps,
@@ -19,7 +14,13 @@ export const BasicTable = () => {
     headerGroups,
     rows,
     prepareRow
-  } = tableInstance;
+  } = useTable(
+    {
+      columns,
+      data
+    },
+    useFilters
+  );
 
   return (
     <table {...getTableProps()} border="1" style={{ width: "100%" }}>
@@ -27,7 +28,10 @@ export const BasicTable = () => {
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              <th {...column.getHeaderProps()}>
+                {column.render("Header")}
+                <div>{column.canFilter ? column.render("Filter") : null}</div>
+              </th>
             ))}
           </tr>
         ))}
